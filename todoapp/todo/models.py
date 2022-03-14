@@ -7,6 +7,9 @@ class TodoList(models.Model):
     title = models.CharField(max_length=30, blank=False)
     owner = models.ForeignKey('auth.User', related_name='todolists', on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ['created']
+
 
 class Tasks(models.Model):
     name = models.CharField(max_length=100, blank=False)
