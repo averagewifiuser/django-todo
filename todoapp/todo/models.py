@@ -14,9 +14,10 @@ class TodoList(models.Model):
 class Tasks(models.Model):
     name = models.CharField(max_length=100, blank=False)
     status = models.CharField(max_length=50, blank=False, default='pending')
-    description = models.TextField()
-    due = models.DateTimeField()
-    todo = models.ForeignKey(TodoList)
+    description = models.TextField(blank=True)
+    due = models.DateTimeField(default=timezone.now)
+    todo = models.ForeignKey(TodoList, related_name='tasks', on_delete=models.CASCADE)
+    created = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ['-created']
