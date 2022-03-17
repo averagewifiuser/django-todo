@@ -4,16 +4,16 @@ from .models import Tasks, TodoList
 
 
 class TasksSerializer(serializers.ModelSerializer):
-    todolist = serializers.ReadOnlyField(source='todo.id')
+    todo = serializers.ReadOnlyField(source='todo.id')
 
     class Meta:
         model = Tasks
-        fields = ['id', 'name', 'status', 'description', 'due', 'todolist']
+        fields = ['id', 'name', 'status', 'description', 'due', 'todo']
 
 
 class TodoListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    tasks = serializers.PrimaryKeyRelatedField(many=True, queryset=Tasks.objects.all())
+    tasks = TasksSerializer(many=True)
 
     class Meta:
         model = TodoList

@@ -1,9 +1,9 @@
 from .models import Tasks, TodoList
 from .serializers import TodoListSerializer, TasksSerializer
 from .permissions import IsOwner
-from rest_framework import permissions, generics, status
-from rest_framework.decorators import api_view
+from rest_framework import viewsets, permissions, generics, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 
 class TodoLists(generics.ListCreateAPIView):
@@ -20,15 +20,27 @@ class TodoListDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = TodoListSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwner]
 
+        
+class TasksViewSet(viewsets.ModelViewSet):
+    queryset = Tasks.objects.all()
+    serializer_class = TasksSerializer
+    permission_classes = [
+        permissions.IsAuthenticated
+    ]
+    lookup_url_kwarg = "pk"
 
-@api_view(['POST', 'GET'])
-def create_task(request):
-    '''
-    Create a new request
-    '''
-    serializer = TasksSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        todo_obj = TodoList.objects.get(pk=self.kwargs.get('todo_id'))
+        serializer.save(todo=todo_obj)
 
+    @action(detail=True)
+    def detail(self, request, *args, **kwargs):
+        task = Tasks.objects.get(pk=self.kwargs.get('pk'))
+        task_obj = {
+            "name": task.name,
+            "status": task.status,
+            "description": task.description,
+            "due": task.due,
+            "created": task.created
+        }
+        return Response(task_obj)
