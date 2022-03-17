@@ -15,7 +15,7 @@ class Tasks(models.Model):
     name = models.CharField(max_length=100, blank=False)
     status = models.CharField(max_length=50, blank=False, default='pending')
     description = models.TextField(blank=True)
-    due = models.DateTimeField(default=timezone.now)
+    due = models.DateTimeField(null=True)
     todo = models.ForeignKey(TodoList, related_name='tasks', on_delete=models.CASCADE)
     created = models.DateTimeField(default=timezone.now)
 
